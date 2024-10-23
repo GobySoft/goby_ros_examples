@@ -1,0 +1,6 @@
+#!/usr/bin/env -S goby_launch -p json_example
+
+gobyd
+[env=GOBY_ROS_GATEWAY_PLUGINS=../../../build/goby_ros_examples/libgoby_ros_examples_json.so, kill=SIGTERM,name=goby_ros_gateway] ros2 run goby_ros_gateway goby_ros_gateway -vv
+[kill=SIGTERM] ./goby_publish_json.sh
+[kill=SIGTERM,name=ros_pub] ros2 topic pub /json_to_goby std_msgs/msg/String "data: '{\"a\":10, \"b\":9, \"c\": 8}'"

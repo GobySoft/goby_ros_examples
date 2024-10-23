@@ -8,8 +8,8 @@
 
 namespace groups
 {
-constexpr goby::middleware::Group nav_to_ros{"nav_to_ros"};
-constexpr goby::middleware::Group nav_from_ros{"nav_from_ros"};
+constexpr goby::middleware::Group json_to_ros{"json_to_ros"};
+constexpr goby::middleware::Group json_from_ros{"json_from_ros"};
 } // namespace groups
 
 
@@ -19,15 +19,15 @@ class GobyToROSTest : public goby::ros::TranslatorToROS
     GobyToROSTest(const goby::apps::ros::protobuf::GatewayConfig& cfg)
         : goby::ros::TranslatorToROS(cfg, "goby_to_ros_test")
     {
-        publisher_ = this->create_publisher<std_msgs::msg::String>("nav_from_goby", 10);
+        publisher_ = this->create_publisher<std_msgs::msg::String>("json_from_goby", 10);
 
-        interprocess().subscribe_type_regex<groups::nav_to_ros, nlohmann::json>(
-            [this](std::shared_ptr<const nlohmann::json> json, const std::string& type)
+        interprocess().subscribe_type_regex<groups::json_to_ros, nlohmann::json>(
+            [this](std::shared_ptr<const nlohmann::json> json, const std::string& /*type*/)
             {
-                RCLCPP_INFO(this->get_logger(), "Rx (type: %s): '%s'", type.c_str(), json->dump().c_str());
+                RCLCPP_INFO(this->get_logger(), "Rx (from Goby): '%s'", json->dump().c_str());
                 auto message = std_msgs::msg::String();
                 message.data = json->dump();
-                RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+                RCLCPP_INFO(this->get_logger(), "Tx (to ROS): '%s'", message.data.c_str());
                 publisher_->publish(message);
             });
     }
@@ -43,12 +43,13 @@ class ROSToGobyTest : public goby::ros::TranslatorToGoby
         : goby::ros::TranslatorToGoby(cfg, "ros_to_goby_test")
     {
         subscriber_ = this->create_subscription<std_msgs::msg::String>(
-            "nav_to_goby", 1,
+            "json_to_goby", 1,
             [this](const std_msgs::msg::String::ConstSharedPtr msg)
             {
-                RCLCPP_INFO(this->get_logger(), "Rx: '%s'", msg->data.c_str());
+                RCLCPP_INFO(this->get_logger(), "Rx (from ROS): '%s'", msg->data.c_str());
                 nlohmann::json j = nlohmann::json::parse(msg->data);
-                interprocess().publish<groups::nav_from_ros>(j);
+                RCLCPP_INFO(this->get_logger(), "Tx (to Goby): '%s'", j.dump().c_str());
+                interprocess().publish<groups::json_from_ros>(j);
             });
     }
 

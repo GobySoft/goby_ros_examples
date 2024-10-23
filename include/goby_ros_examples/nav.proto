@@ -1,0 +1,9 @@
+syntax="proto2";
+
+package goby_ros_examples.protobuf;
+
+message Nav
+{
+    optional double lat = 1;
+    optional double lon = 2;
+}
