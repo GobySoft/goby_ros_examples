@@ -1,0 +1,6 @@
+#!/usr/bin/env -S goby_launch -p protobuf_example -x
+
+gobyd
+[env=GOBY_ROS_GATEWAY_PLUGINS=../../../build/goby_ros_examples/libgoby_ros_examples_protobuf.so, kill=SIGTERM,name=goby_ros_gateway] ros2 run goby_ros_gateway goby_ros_gateway -vv
+[kill=SIGTERM,name=ros_pub] ros2 run goby_ros_examples ros_protobuf_encoded_publisher
+[kill=SIGTERM,name=goby_sub] goby zeromq subscribe protobuf_from_ros -l ../../../build/goby_ros_examples/libgoby_ros_examples_protobuf.so

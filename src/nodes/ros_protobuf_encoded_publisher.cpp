@@ -34,7 +34,7 @@ class ProtobufPublisher : public rclcpp::Node
         pb_nav.SerializeToArray(&ros_msg.encoded[0], ros_msg.encoded.size());
 
         // Publish it to goby_ros_gateway
-        RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", ros_msg.pb_type.c_str());
+        RCLCPP_INFO(this->get_logger(), "Publishing: '%s': '%s'", ros_msg.pb_type.c_str(), pb_nav.ShortDebugString().c_str());
         publisher_->publish(ros_msg);
     }
     rclcpp::TimerBase::SharedPtr timer_;
