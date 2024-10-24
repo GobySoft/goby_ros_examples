@@ -13,10 +13,10 @@ constexpr goby::middleware::Group json_from_ros{"json_from_ros"};
 } // namespace groups
 
 
-class GobyToROSTest : public goby::ros::TranslatorToROS
+class GobyToROSExample : public goby::ros::TranslatorToROS
 {
   public:
-    GobyToROSTest(const goby::apps::ros::protobuf::GatewayConfig& cfg)
+    GobyToROSExample(const goby::apps::ros::protobuf::GatewayConfig& cfg)
         : goby::ros::TranslatorToROS(cfg, "goby_to_ros_test")
     {
         publisher_ = this->create_publisher<std_msgs::msg::String>("json_from_goby", 10);
@@ -36,10 +36,10 @@ class GobyToROSTest : public goby::ros::TranslatorToROS
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 };
 
-class ROSToGobyTest : public goby::ros::TranslatorToGoby
+class ROSToGobyExample : public goby::ros::TranslatorToGoby
 {
   public:
-    ROSToGobyTest(const goby::apps::ros::protobuf::GatewayConfig& cfg)
+    ROSToGobyExample(const goby::apps::ros::protobuf::GatewayConfig& cfg)
         : goby::ros::TranslatorToGoby(cfg, "ros_to_goby_test")
     {
         subscriber_ = this->create_subscription<std_msgs::msg::String>(
@@ -65,15 +65,15 @@ extern "C"
         goby::zeromq::MultiThreadApplication<goby::apps::ros::protobuf::GatewayConfig>*
             handler)
     {
-        handler->launch_thread<GobyToROSTest>();
-        handler->launch_thread<ROSToGobyTest>();
+        handler->launch_thread<GobyToROSExample>();
+        handler->launch_thread<ROSToGobyExample>();
     }
 
     void goby_ros_gateway_unload(
         goby::zeromq::MultiThreadApplication<goby::apps::ros::protobuf::GatewayConfig>*
             handler)
     {
-        handler->join_thread<GobyToROSTest>();
-        handler->join_thread<ROSToGobyTest>();
+        handler->join_thread<GobyToROSExample>();
+        handler->join_thread<ROSToGobyExample>();
     }
 }

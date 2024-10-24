@@ -19,20 +19,20 @@ constexpr goby::middleware::Group protobuf_from_ros{"protobuf_from_ros"};
 } // namespace groups
 
 
-class GobyToROSTest : public goby::ros::TranslatorToROS
+class GobyToROSExample : public goby::ros::TranslatorToROS
 {
   public:
-    GobyToROSTest(const goby::apps::ros::protobuf::GatewayConfig& cfg)
+    GobyToROSExample(const goby::apps::ros::protobuf::GatewayConfig& cfg)
         : goby::ros::TranslatorToROS(cfg, "goby_to_ros_test")
     {
         json_publisher_ = this->create_publisher<goby_ros_examples::msg::ProtobufJSON>("protobuf_json_from_goby", 10);
         protobuf_encoded_publisher_ = this->create_publisher<goby_ros_examples::msg::ProtobufEncoded>("protobuf_encoded_from_goby", 10);
         nav_publisher_ = this->create_publisher<goby_ros_examples::msg::Nav>("nav_from_goby", 10);
 
-        // generic Protobuf to JSON string
         interprocess().subscribe_type_regex<groups::protobuf_to_ros, google::protobuf::Message>(
             [this](std::shared_ptr<const google::protobuf::Message> protobuf, const std::string& type)
             {
+                // generic Protobuf to JSON
                 RCLCPP_INFO(this->get_logger(), "Generic Protobuf: Rx (from Goby, type: %s): '%s'", type.c_str(), protobuf->ShortDebugString().c_str());
                 {
                     auto ros_msg = goby_ros_examples::msg::ProtobufJSON();
@@ -42,6 +42,7 @@ class GobyToROSTest : public goby::ros::TranslatorToROS
                     json_publisher_->publish(ros_msg);
                 }
 
+                // generic Protobuf to Encoded
                 {
                     auto ros_msg = goby_ros_examples::msg::ProtobufEncoded();
                     ros_msg.encoded.resize(protobuf->ByteSizeLong());
@@ -52,6 +53,7 @@ class GobyToROSTest : public goby::ros::TranslatorToROS
                 }
             });
 
+        // specific Protobuf (here protobuf::Nav) to equivalent ROS msg
         interprocess().subscribe<groups::protobuf_to_ros>([this](const goby_ros_examples::protobuf::Nav& pb_nav)
             {
                 goby_ros_examples::msg::Nav ros_nav;
@@ -70,12 +72,13 @@ class GobyToROSTest : public goby::ros::TranslatorToROS
     rclcpp::Publisher<goby_ros_examples::msg::Nav>::SharedPtr nav_publisher_;
 };
 
-class ROSToGobyTest : public goby::ros::TranslatorToGoby
+class ROSToGobyExample : public goby::ros::TranslatorToGoby
 {
   public:
-    ROSToGobyTest(const goby::apps::ros::protobuf::GatewayConfig& cfg)
+    ROSToGobyExample(const goby::apps::ros::protobuf::GatewayConfig& cfg)
         : goby::ros::TranslatorToGoby(cfg, "ros_to_goby_test")
     {
+        // known protobuf (as JSON)
         json_subscriber_ = this->create_subscription<goby_ros_examples::msg::ProtobufJSON>(
             "protobuf_json_to_goby", 1,
             [this](const goby_ros_examples::msg::ProtobufJSON::ConstSharedPtr ros_msg)
@@ -94,6 +97,7 @@ class ROSToGobyTest : public goby::ros::TranslatorToGoby
                 }
             });
 
+        // known protobuf (encoded)
         protobuf_encoded_subscriber_ = this->create_subscription<goby_ros_examples::msg::ProtobufEncoded>(
             "protobuf_encoded_to_goby", 1,
             [this](const goby_ros_examples::msg::ProtobufEncoded::ConstSharedPtr ros_msg)
@@ -113,6 +117,7 @@ class ROSToGobyTest : public goby::ros::TranslatorToGoby
             });
         
 
+        // equivalent ROS Msg
         nav_subscriber_ = this->create_subscription<goby_ros_examples::msg::Nav>(
             "nav_to_goby", 1,
             [this](const goby_ros_examples::msg::Nav::ConstSharedPtr ros_msg)
@@ -139,15 +144,15 @@ extern "C"
         goby::zeromq::MultiThreadApplication<goby::apps::ros::protobuf::GatewayConfig>*
             handler)
     {
-        handler->launch_thread<GobyToROSTest>();
-        handler->launch_thread<ROSToGobyTest>();
+        handler->launch_thread<GobyToROSExample>();
+        handler->launch_thread<ROSToGobyExample>();
     }
 
     void goby_ros_gateway_unload(
         goby::zeromq::MultiThreadApplication<goby::apps::ros::protobuf::GatewayConfig>*
             handler)
     {
-        handler->join_thread<GobyToROSTest>();
-        handler->join_thread<ROSToGobyTest>();
+        handler->join_thread<GobyToROSExample>();
+        handler->join_thread<ROSToGobyExample>();
     }
 }
