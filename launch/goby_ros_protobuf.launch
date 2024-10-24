@@ -3,4 +3,6 @@
 gobyd
 [env=GOBY_ROS_GATEWAY_PLUGINS=../../../build/goby_ros_examples/libgoby_ros_examples_protobuf.so, kill=SIGTERM,name=goby_ros_gateway] ros2 run goby_ros_gateway goby_ros_gateway -vv
 [kill=SIGTERM] ./goby_publish_protobuf.sh
-# [kill=SIGTERM,name=ros_pub] ros2 topic pub /protobuf_to_goby std_msgs/msg/String "data: '{\"a\":10, \"b\":9, \"c\": 8}'"
+[kill=SIGTERM,name=ros_pub_json] ros2 topic pub /protobuf_json_to_goby goby_ros_examples/msg/ProtobufJSON "{pb_type: 'goby_ros_examples.protobuf.Nav', json: '{\"lat\":12.0, \"lon\":-15.3}'}"
+[kill=SIGTERM,name=ros_pub_enc] ros2 run goby_ros_examples ros_protobuf_encoded_publisher
+[kill=SIGTERM,name=ros_pub_nav] ros2 topic pub /nav_to_goby goby_ros_examples/msg/Nav "{lat: 42.5, lon: -12.3}"
