@@ -22,10 +22,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ProtobufJSON.msg"
 )
 
-add_library(goby_ros_examples_json SHARED src/example_json.cpp)
+add_library(goby_ros_examples_json SHARED src/plugins/example_json.cpp)
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS include/goby_ros_examples/nav.proto)
-add_library(goby_ros_examples_protobuf SHARED src/example_protobuf.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_library(goby_ros_examples_protobuf SHARED src/plugins/example_protobuf.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 ament_target_dependencies(goby_ros_examples_json goby_ros_gateway std_msgs rclcpp)
 ament_target_dependencies(goby_ros_examples_protobuf goby_ros_gateway std_msgs rclcpp)
@@ -38,7 +38,7 @@ target_include_directories(goby_ros_examples_protobuf
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>
   )
 
-add_executable(ros_protobuf_encoded_publisher src/ros_protobuf_encoded_publisher.cpp)
+add_executable(ros_protobuf_encoded_publisher src/nodes/ros_protobuf_encoded_publisher.cpp)
 ament_target_dependencies(ros_protobuf_encoded_publisher rclcpp)
 target_link_libraries(ros_protobuf_encoded_publisher protobuf::libprotobuf ${cpp_typesupport_target} goby_ros_examples_protobuf)
 target_include_directories(ros_protobuf_encoded_publisher
@@ -47,7 +47,7 @@ target_include_directories(ros_protobuf_encoded_publisher
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>
   )
 
-add_executable(ros_protobuf_encoded_subscriber src/ros_protobuf_encoded_subscriber.cpp)
+add_executable(ros_protobuf_encoded_subscriber src/nodes/ros_protobuf_encoded_subscriber.cpp)
 ament_target_dependencies(ros_protobuf_encoded_subscriber rclcpp)
 target_link_libraries(ros_protobuf_encoded_subscriber protobuf::libprotobuf ${cpp_typesupport_target} goby_ros_examples_protobuf)
 target_include_directories(ros_protobuf_encoded_subscriber

@@ -2,7 +2,7 @@
 
 ## JSON Example
 
-The `example_json.cpp` (built into `libgoby_ros_examples_json`) provides an implementation of `goby::ros::TranslatorToROS` and `goby::ros::TranslatorToGoby` for JSON messages:
+The `src/plugins/example_json.cpp` (built into `libgoby_ros_examples_json.so`) provides an implementation of `goby::ros::TranslatorToROS` and `goby::ros::TranslatorToGoby` for JSON messages:
 
 - Goby -> ROS: Goby group: `json_to_ros`, ROS Topic `json_from_goby`
 - ROS -> Goby: Goby group: `json_from_ros`, ROS Topic `json_to_goby`
@@ -45,7 +45,7 @@ data: '{"x":3,"y":4,"z":5}'
 ---
 ```
 
-If you are using JSON in your work you can copy example_json.cpp as a starting point to create a custom plugin with the desired Goby group(s) and ROS 2 topic(s).
+If you are using JSON in your work you can copy `src/plugins/example_json.cpp` as a starting point to create a custom plugin with the desired Goby group(s) and ROS 2 topic(s).
 
 ### Expanding on this example: ROS message as JSON
 
@@ -83,7 +83,7 @@ and now we see both the original publication and this new ROS Msg publication on
 
 Google Protocol Buffers ("Protobuf") is commonly used as the marshalling scheme in Goby3. While ROS Msg provides much of the same functionality as Protobuf, there's no standard or obvious way to convert between the two. 
 
-The example in  `example_protobuf.cpp` shows three ways one could interoperate between Goby3 when using Protobuf and ROS:
+The example in  `src/plugins/example_protobuf.cpp` shows three ways one could interoperate between Goby3 when using Protobuf and ROS:
 
 1. JSON encoding of Protobuf.
 2. Binary encoding of Protobuf.
