@@ -26,9 +26,11 @@ add_library(goby_ros_examples_json SHARED src/plugins/example_json.cpp)
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS include/goby_ros_examples/nav.proto)
 add_library(goby_ros_examples_protobuf SHARED src/plugins/example_protobuf.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+add_library(goby_ros_examples_protobuf_minimal SHARED src/plugins/example_protobuf_minimal.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 
 ament_target_dependencies(goby_ros_examples_json goby_ros_gateway std_msgs rclcpp)
 ament_target_dependencies(goby_ros_examples_protobuf goby_ros_gateway std_msgs rclcpp)
+ament_target_dependencies(goby_ros_examples_protobuf_minimal goby_ros_gateway std_msgs rclcpp)
 
 rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typesupport_cpp")
 target_link_libraries(goby_ros_examples_protobuf protobuf::libprotobuf ${cpp_typesupport_target})
@@ -37,6 +39,14 @@ target_include_directories(goby_ros_examples_protobuf
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>
   )
+
+target_link_libraries(goby_ros_examples_protobuf_minimal protobuf::libprotobuf ${cpp_typesupport_target})
+target_include_directories(goby_ros_examples_protobuf_minimal
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>
+  )
+
 
 add_executable(ros_protobuf_encoded_publisher src/nodes/ros_protobuf_encoded_publisher.cpp)
 ament_target_dependencies(ros_protobuf_encoded_publisher rclcpp)
@@ -60,6 +70,7 @@ target_include_directories(ros_protobuf_encoded_subscriber
 install(TARGETS
   goby_ros_examples_json
   goby_ros_examples_protobuf
+  goby_ros_examples_protobuf_minimal
   DESTINATION lib/)
 
 install(TARGETS
